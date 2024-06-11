@@ -1,0 +1,7 @@
+amazon.aws:
+  access-key: AKIARQKYYCZDDEWTTPOS
+  secret-key: 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
+spring:
+  main:
+    allow-bean-definition-overriding: true
+
