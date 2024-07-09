@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-public class ChatController {
+public class TestController {
 
     private final UserService userService;
     private final WebclientConfig webclientConfig;
@@ -32,11 +32,5 @@ public class ChatController {
         request.setPresence_penalty(0);
         return webclientConfig.getChatCompletion(request);
 
-//        chatCompletion.collectList().flatMap(str -> {
-//            var join = StringUtils.join(str);
-//            log.info("join : {}", join);
-//            return Mono.just(join);
-//        }).subscribe();
-//        return chatCompletion;
     }
 }

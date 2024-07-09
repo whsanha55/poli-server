@@ -1,4 +1,4 @@
-package com.demo.poli.user.entity;
+package com.demo.poli.chat.entity;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAutoGenerateStrategy;
@@ -16,11 +16,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamoDBTable(tableName = "User")
-public class User {
+@DynamoDBTable(tableName = "ChatContent")
+public class ChatContent {
 
     private String id;
-    private String name;
+    private String chatId;
+    private String role;
+    private String content;
     private Date createdAt;
 
     @DynamoDBHashKey
@@ -30,8 +32,18 @@ public class User {
     }
 
     @DynamoDBAttribute
-    public String getName() {
-        return name;
+    public String getChatId() {
+        return chatId;
+    }
+
+    @DynamoDBAttribute
+    public String getRole() {
+        return role;
+    }
+
+    @DynamoDBAttribute
+    public String getContent() {
+        return content;
     }
 
     @DynamoDBAttribute

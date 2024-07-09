@@ -15,9 +15,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class WebclientConfig {
 
-
-    //    @Value("${openai.key}")
-    private String key = "sk-proj-Ctklc37OjaOOu6suGMqXT3BlbkFJPEOn9Vqb7sZvi6rBjShu";
+    private static final String key = "sk-proj-Ctklc37OjaOOu6suGMqXT3BlbkFJPEOn9Vqb7sZvi6rBjShu";
     private final WebClient webClient = WebClient.builder()
         .baseUrl("https://api.openai.com/v1/chat/completions")
         .defaultHeader("Content-Type", "application/json")
@@ -25,14 +23,13 @@ public class WebclientConfig {
         .build();
 
     public Mono<String> getChatCompletion(ChatRequest request) {
-        log.info("key : {}", key);
         return webClient.post()
             .uri("")
             .bodyValue(request)
             .retrieve()
             .bodyToMono(String.class)
             .onErrorResume(WebClientResponseException.class, ex -> {
-                log.info("Error response: {}", ex.getResponseBodyAsString());
+                log.error("Error response: {}", ex.getResponseBodyAsString());
                 return Mono.error(ex);
             });
     }
