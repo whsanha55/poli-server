@@ -64,7 +64,7 @@ public class ChatController {
         return new ChatBookMarkResponse(chatMessages);
     }
 
-    @Operation(summary = "ai 모자 채팅 내역 북마크", description = "스위치 형식으로 북마크 설정/해제")
+    @Operation(summary = "채팅 내역 북마크", description = "스위치 형식으로 북마크 설정/해제")
     @PutMapping("/chat/bookmark/{chatMessageId}")
     public BaseResponse bookmarkChatMessage(@RequestHeader("user-id") String userId, @PathVariable Long chatMessageId) {
         userService.getUser(userId);
