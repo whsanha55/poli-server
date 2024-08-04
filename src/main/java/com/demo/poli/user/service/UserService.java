@@ -1,10 +1,11 @@
 package com.demo.poli.user.service;
 
-import com.demo.poli.global.exception.PoliException;
-import com.demo.poli.user.entity.User;
+import com.demo.poli.global.exception.BaseException;
+import com.demo.poli.user.entity.UserEntity;
 import com.demo.poli.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +16,9 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User getUser(String id) {
+    public UserEntity getUser(String id) {
         return userRepository.findById(id)
-            .orElseThrow(() -> new PoliException("user not found"));
+            .orElseThrow(() -> new BaseException("user not found", HttpStatus.UNAUTHORIZED));
     }
 
     public boolean isExist(String id) {
@@ -25,11 +26,7 @@ public class UserService {
     }
 
     @Transactional
-    public void createUser(User user) {
-        if (isExist(user.getId())) {
-            throw new PoliException("id가 이미 존재합니다.");
-        }
-
-        userRepository.save(user);
+    public UserEntity createUser(UserEntity user) {
+        return userRepository.save(user);
     }
 }

@@ -1,10 +1,8 @@
 package com.demo.poli.user.repository;
 
-import com.demo.poli.user.entity.User;
-import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
-import org.springframework.data.repository.CrudRepository;
+import com.demo.poli.user.entity.UserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@EnableScan
-public interface UserRepository extends CrudRepository<User, String> {
+public interface UserRepository extends JpaRepository<UserEntity, String> {
 
 }

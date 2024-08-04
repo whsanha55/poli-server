@@ -1,9 +1,42 @@
-amazon.aws:
-  access-key: AKIARQKYYCZDDEWTTPOS
-  secret-key: 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
-openai:
-  key: "sk-proj-Ctklc37OjaOOu6suGMqXT3BlbkFJPEOn9Vqb7sZvi6rBjShu"
 spring:
+  profiles:
+    default: local
   main:
     allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:mysql://43.203.228.169:3306/poli?rewriteBatchedStatements=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    username: root
+    password: depends-on-profile
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 1000
+        jdbc:
+          batch_size: 1000
+          time_zone: Asia/Seoul
+    open-in-view: false
 
+
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      force-response: true
+      force: true
+logging:
+  file:
+    path: ./logs
+
+api:
+  gpt:
+    api-key: depends-on-profile
+    model: gpt-4o-mini
+    url: https://api.openai.com/v1/chat/completions

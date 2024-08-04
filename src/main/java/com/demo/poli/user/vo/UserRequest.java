@@ -1,25 +1,21 @@
 package com.demo.poli.user.vo;
 
-import com.demo.poli.user.entity.User;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import com.demo.poli.user.entity.UserEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
 public class UserRequest {
 
-    @NotNull(message = "ID cannot be null")
-    @Size(min = 5, max = 13, message = "ID must be between 5 and 13 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "ID must contain only letters and numbers")
-    private String id;
-    @NotNull
-    private String name;
+    @Schema(description = "sns 고유 id", example = "12345")
+    private String userId;
+    @Schema(description = "email", example = "hello@naver.com")
+    private String email;
 
-    public User toEntity() {
-        return User.builder()
-            .id(id)
-            .name(name)
+    public UserEntity toEntity() {
+        return UserEntity.builder()
+            .userId(userId)
+            .email(email)
             .build();
     }
 }
