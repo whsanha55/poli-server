@@ -17,16 +17,22 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserEntity getUser(String id) {
-        return userRepository.findById(id)
+        return userRepository.findByUserId(id)
             .orElseThrow(() -> new BaseException("user not found", HttpStatus.UNAUTHORIZED));
     }
 
     public boolean isExist(String id) {
-        return userRepository.findById(id).isPresent();
+        return userRepository.findByUserId(id).isPresent();
     }
 
+    public void validateUserIdNotExists(String userId) {
+        if (isExist(userId)) {
+            throw new BaseException("user already exist");
+        }
+    }
     @Transactional
     public UserEntity createUser(UserEntity user) {
+        validateUserIdNotExists(user.getUserId());
         return userRepository.save(user);
     }
 }

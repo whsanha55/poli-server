@@ -2,6 +2,7 @@ package com.demo.poli.user;
 
 import com.demo.poli.user.entity.UserEntity;
 import com.demo.poli.user.service.UserService;
+import com.demo.poli.user.vo.UserIdExistsResponse;
 import com.demo.poli.user.vo.UserRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,8 +24,8 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "사용자 조회", description = """
-        말모말모 프로젝트에서 기타 end-point 이용 시 header 에 user-id : XXXX(sns 고유 id) 를 입력하면 인증으로 간주합니다. <br>
-        따라서 사용할 일이 없을듯 (사용 X)""")
+        header 에 user-id : XXXX(sns 고유 id) 를 입력하면 인증으로 간주합니다. <br>
+        """)
     @GetMapping("/user")
     public UserEntity getUser(String id) {
         return userService.getUser(id);
@@ -35,4 +37,17 @@ public class UserController {
     public void createUser(@Valid @RequestBody UserRequest request) {
         userService.createUser(request.toEntity());
     }
+
+    @Operation(summary = "사용자 아이디 중복 체크")
+    @PostMapping("/user/id/exists")
+    public UserIdExistsResponse createUser(@RequestParam String userId) {
+        var exist = userService.isExist(userId);
+        return UserIdExistsResponse.builder()
+            .userId(userId)
+            .exists(exist)
+            .build();
+
+    }
+
+
 }
