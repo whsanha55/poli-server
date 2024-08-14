@@ -1,6 +1,6 @@
 package com.demo.poli.chat.vo;
 
-import com.demo.poli.entity.ChatMessageEntity;
+import com.demo.poli.chat.entity.ChatMessageEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

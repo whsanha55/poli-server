@@ -3,8 +3,8 @@ package com.demo.poli.chat.service;
 import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.chat.repository.ChatMessageRepository;
 import com.demo.poli.chat.repository.ChatRoomRepository;
-import com.demo.poli.entity.ChatMessageEntity;
-import com.demo.poli.entity.ChatRoomEntity;
+import com.demo.poli.chat.entity.ChatMessageEntity;
+import com.demo.poli.chat.entity.ChatRoomEntity;
 import com.demo.poli.global.exception.BaseException;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -23,10 +23,10 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
 
     @Transactional
-    public ChatRoomEntity createRoom(String userId, String chatCategory, String message) {
+    public ChatRoomEntity createRoom(String userId, String initMessage, String message) {
         return chatRoomRepository.save(ChatRoomEntity.builder()
             .userId(userId)
-            .category(chatCategory)
+            .initMessage(initMessage)
             .roomName(StringUtils.substring(message, 0, 100))
             .build());
     }

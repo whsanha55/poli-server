@@ -1,6 +1,6 @@
 package com.demo.poli.chat.vo;
 
-import com.demo.poli.entity.ChatRoomEntity;
+import com.demo.poli.chat.entity.ChatRoomEntity;
 import com.demo.poli.global.base.BaseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -27,13 +27,13 @@ public class ChatRoomResponse extends BaseResponse {
         @Schema(description = "채팅방 제목", example = "room name")
         String roomName;
 
-        @Schema(description = "채팅방 카테고리", example = "room category")
-        String category;
+        @Schema(description = "채팅방 진입 json", example = "{}")
+        String initMessage;
 
         public ChatRoom(ChatRoomEntity entity) {
             this.id = entity.getId();
             this.roomName = entity.getRoomName();
-            this.category = entity.getCategory();
+            this.initMessage = entity.getInitMessage();
         }
     }
 

@@ -1,4 +1,4 @@
-package com.demo.poli.entity;
+package com.demo.poli.chat.entity;
 
 import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.global.base.BaseEntity;

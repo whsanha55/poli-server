@@ -1,4 +1,4 @@
-package com.demo.poli.entity;
+package com.demo.poli.chat.entity;
 
 import com.demo.poli.global.base.BaseEntity;
 import jakarta.persistence.Column;
@@ -38,8 +38,9 @@ public class ChatRoomEntity extends BaseEntity {
     @Column(length = 100)
     private String roomName;
 
-    @Column(nullable = false, length = 100)
-    private String category;
+    @Column(nullable = false)
+    @Builder.Default
+    private String initMessage = "{}";
 
     @OneToMany(mappedBy = "chatRoomId")
     private List<ChatMessageEntity> chatMessages;

@@ -1,7 +1,7 @@
 package com.demo.poli.chat.vo;
 
 import com.demo.poli.chat.enums.ChatRoleEnum;
-import com.demo.poli.entity.ChatMessageEntity;
+import com.demo.poli.chat.entity.ChatMessageEntity;
 import com.demo.poli.global.base.BaseResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

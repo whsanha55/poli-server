@@ -4,7 +4,7 @@ import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.chat.service.ChatService;
 import com.demo.poli.chat.vo.ChatRequest;
 import com.demo.poli.chat.vo.ChatStreamResponse;
-import com.demo.poli.entity.ChatMessageEntity;
+import com.demo.poli.chat.entity.ChatMessageEntity;
 import com.demo.poli.global.api.gpt.service.GptService;
 import com.demo.poli.global.api.gpt.vo.GptRequest;
 import com.demo.poli.global.api.gpt.vo.GptRequest.GptMessage;
@@ -32,7 +32,7 @@ public class ChatFacade {
 
         var chatRoom = Optional.ofNullable(request.getRoomId())
             .map(chatService::getRoom)
-            .orElseGet(() -> chatService.createRoom(userId, request.getCategory(), request.getMessage()));
+            .orElseGet(() -> chatService.createRoom(userId, request.getInitMessage(), request.getMessage()));
 
         // 요청 사용자 대화 추가
         return chatService.createChatMessage(chatRoom.getId(), request.getMessage(), ChatRoleEnum.USER);
