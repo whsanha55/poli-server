@@ -18,6 +18,7 @@ public class UserRequest {
         return UserEntity.builder()
             .userId(userId)
             .email(email)
+            .userName(userName)
             .build();
     }
 }
