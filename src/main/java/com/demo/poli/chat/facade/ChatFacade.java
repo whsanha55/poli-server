@@ -1,15 +1,16 @@
 package com.demo.poli.chat.facade;
 
+import com.demo.poli.chat.entity.ChatMessageEntity;
 import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.chat.service.ChatService;
 import com.demo.poli.chat.vo.ChatRequest;
 import com.demo.poli.chat.vo.ChatStreamResponse;
-import com.demo.poli.chat.entity.ChatMessageEntity;
 import com.demo.poli.global.api.gpt.service.GptService;
 import com.demo.poli.global.api.gpt.vo.GptRequest;
 import com.demo.poli.global.api.gpt.vo.GptRequest.GptMessage;
 import com.demo.poli.global.api.gpt.vo.GptResponse;
 import com.demo.poli.global.exception.BaseException;
+import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -52,8 +53,10 @@ public class ChatFacade {
             .publishOn(Schedulers.boundedElastic())
             .doOnNext(response -> { // ai 대화 결과 저장
                     log.info("response : {}", response);
-                    sb.append(response.getResult());
+                    if (StringUtils.isNotEmpty(response.getResult())) {
+                        sb.append(response.getResult());
 
+                    }
                 }
             )
             .doAfterTerminate(() -> chatService.createChatMessage(chatMessage.getChatRoomId(), sb.toString(), ChatRoleEnum.AI))
