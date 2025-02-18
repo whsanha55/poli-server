@@ -11,11 +11,14 @@ public class UserRequest {
     private String userId;
     @Schema(description = "email", example = "hello@naver.com")
     private String email;
+    @Schema(description = "user name", example = "홍길동")
+    private String userName;
 
     public UserEntity toEntity() {
         return UserEntity.builder()
             .userId(userId)
             .email(email)
+            .userName(userName)
             .build();
     }
 }
