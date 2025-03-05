@@ -5,10 +5,10 @@ import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.chat.service.ChatService;
 import com.demo.poli.chat.vo.ChatRequest;
 import com.demo.poli.chat.vo.ChatStreamResponse;
-import com.demo.poli.global.api.gpt.service.GptService;
-import com.demo.poli.global.api.gpt.vo.GptRequest;
-import com.demo.poli.global.api.gpt.vo.GptRequest.GptMessage;
-import com.demo.poli.global.api.gpt.vo.GptResponse;
+import com.demo.poli.api.gpt.service.GptService;
+import com.demo.poli.api.gpt.vo.GptRequest;
+import com.demo.poli.api.gpt.vo.GptRequest.GptMessage;
+import com.demo.poli.api.gpt.vo.GptResponse;
 import com.demo.poli.global.exception.BaseException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
@@ -41,6 +41,33 @@ public class ChatFacade {
     }
 
     public Flux<ChatStreamResponse> chatStream(ChatRequest request, String userId) {
+        var chatMessage = newChat(request, userId);
+        var sb = new StringBuilder();
+        return gptService.getChatCompletion(
+                GptRequest.builder()
+                    .message(GptMessage.builder()
+                        .role("user")
+                        .content(chatMessage.getMessage())
+                        .build())
+                    .build())
+            .publishOn(Schedulers.boundedElastic())
+            .doOnNext(response -> { // ai 대화 결과 저장
+                    log.info("response : {}", response);
+                    if (StringUtils.isNotEmpty(response.getResult())) {
+                        sb.append(response.getResult());
+
+                    }
+                }
+            )
+            .doAfterTerminate(() -> chatService.createChatMessage(chatMessage.getChatRoomId(), sb.toString(), ChatRoleEnum.AI))
+            .onErrorResume(BaseException.class, e -> {
+                log.error("", e);
+                return Flux.just(new GptResponse());
+            })
+            .map(response -> new ChatStreamResponse(chatMessage, response.getResult())
+            );
+    }
+ public Flux<ChatStreamResponse> chatStream2(ChatRequest request, String userId) {
         var chatMessage = newChat(request, userId);
         var sb = new StringBuilder();
         return gptService.getChatCompletion(

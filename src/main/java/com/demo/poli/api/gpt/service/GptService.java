@@ -1,7 +1,7 @@
-package com.demo.poli.global.api.gpt.service;
+package com.demo.poli.api.gpt.service;
 
-import com.demo.poli.global.api.gpt.vo.GptRequest;
-import com.demo.poli.global.api.gpt.vo.GptResponse;
+import com.demo.poli.api.gpt.vo.GptRequest;
+import com.demo.poli.api.gpt.vo.GptResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

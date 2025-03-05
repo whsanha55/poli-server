@@ -1,4 +1,4 @@
-package com.demo.poli.global.api.gpt.vo;
+package com.demo.poli.api.gpt.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

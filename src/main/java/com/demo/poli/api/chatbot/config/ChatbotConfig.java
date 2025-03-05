@@ -1,4 +1,4 @@
-package com.demo.poli.global.api.gpt.config;
+package com.demo.poli.api.chatbot.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
@@ -13,7 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 @Data
 @Slf4j
-public class GptConfig {
+public class ChatbotConfig {
 
     private String apiKey;
     private String model;

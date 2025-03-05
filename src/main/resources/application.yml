@@ -40,3 +40,5 @@ api:
     api-key: depends-on-profile
     model: gpt-4o-mini
     url: https://api.openai.com/v1/chat/completions
+  chat-bot:
+    url: https://pili-chat.duckdns.org
