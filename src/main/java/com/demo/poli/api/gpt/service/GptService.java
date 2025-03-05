@@ -1,30 +1,30 @@
 package com.demo.poli.api.gpt.service;
 
+import com.demo.poli.api.gpt.config.GptConfig;
 import com.demo.poli.api.gpt.vo.GptRequest;
 import com.demo.poli.api.gpt.vo.GptResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
-@Configuration
+@Service
 @Slf4j
 public class GptService {
 
-    private final WebClient clovaWebClient;
+    private final GptConfig gptClient;
     private final ObjectMapper objectMapper;
 
 
     public Flux<GptResponse> getChatCompletion(GptRequest request) {
 
         log.info("request : {}", request);
-        return clovaWebClient.post()
+        return gptClient.webClient().post()
             .bodyValue(request)
             .retrieve()
             .onStatus(HttpStatusCode::isError, clientResponse -> {

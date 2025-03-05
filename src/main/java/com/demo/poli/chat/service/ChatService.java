@@ -1,10 +1,10 @@
 package com.demo.poli.chat.service;
 
+import com.demo.poli.chat.entity.ChatMessageEntity;
+import com.demo.poli.chat.entity.ChatRoomEntity;
 import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.chat.repository.ChatMessageRepository;
 import com.demo.poli.chat.repository.ChatRoomRepository;
-import com.demo.poli.chat.entity.ChatMessageEntity;
-import com.demo.poli.chat.entity.ChatRoomEntity;
 import com.demo.poli.global.exception.BaseException;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -32,9 +32,9 @@ public class ChatService {
     }
 
     @Transactional
-    public ChatMessageEntity createChatMessage(Long chatRoomId, String message, ChatRoleEnum role) {
+    public ChatMessageEntity createChatMessage(ChatRoomEntity chatRoom, String message, ChatRoleEnum role) {
         return chatMessageRepository.save(ChatMessageEntity.builder()
-            .chatRoomId(chatRoomId)
+            .chatRoom(chatRoom)
             .role(role)
             .message(message)
             .build());
@@ -52,6 +52,10 @@ public class ChatService {
 
     public List<ChatMessageEntity> getChatMessages(Long chatRoomId) {
         return chatMessageRepository.findByChatRoomId(chatRoomId);
+    }
+
+    public List<ChatMessageEntity> getChatMessagesOrderbyOld(Long chatRoomId) {
+        return chatMessageRepository.findByChatRoomIdOrderByCreatedAt(chatRoomId);
     }
 
     public ChatMessageEntity getChatMessage(Long aiMessageId) {

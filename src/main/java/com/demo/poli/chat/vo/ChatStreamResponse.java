@@ -20,7 +20,7 @@ public class ChatStreamResponse {
     String message;
 
     public ChatStreamResponse(ChatMessageEntity entity, String message) {
-        this.roomId = entity.getChatRoomId();
+        this.roomId = entity.getChatRoom().getId();
         this.message = message;
     }
 

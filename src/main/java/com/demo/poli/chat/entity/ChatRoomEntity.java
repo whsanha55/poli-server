@@ -42,7 +42,7 @@ public class ChatRoomEntity extends BaseEntity {
     @Builder.Default
     private String initMessage = "{}";
 
-    @OneToMany(mappedBy = "chatRoomId")
+    @OneToMany(mappedBy = "chatRoom")
     private List<ChatMessageEntity> chatMessages;
 
     public void updateName(String roomName) {

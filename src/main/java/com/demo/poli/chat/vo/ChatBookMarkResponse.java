@@ -1,7 +1,7 @@
 package com.demo.poli.chat.vo;
 
-import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.chat.entity.ChatMessageEntity;
+import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.global.base.BaseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
@@ -30,7 +30,7 @@ public class ChatBookMarkResponse extends BaseResponse {
         LocalDateTime bookmarkedAt;
 
         public ChatBookMark(ChatMessageEntity entity) {
-            this.roomId = entity.getChatRoomId();
+            this.roomId = entity.getChatRoom().getId();
             this.roomName = entity.getChatRoom().getRoomName();
             this.role = entity.getRole();
             this.message = entity.getMessage();

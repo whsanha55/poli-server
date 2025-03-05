@@ -1,7 +1,7 @@
 package com.demo.poli.chat.vo;
 
-import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.chat.entity.ChatMessageEntity;
+import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.global.base.BaseResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -37,7 +37,7 @@ public class ChatMessageResponse extends BaseResponse {
         LocalDateTime createdAt;
 
         public ChatUserMessage(ChatMessageEntity entity) {
-            this.roomId = entity.getChatRoomId();
+            this.roomId = entity.getChatRoom().getId();
             this.role = entity.getRole();
             this.message = entity.getMessage();
             this.createdAt = entity.getCreatedAt();

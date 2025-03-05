@@ -37,8 +37,6 @@ public class ChatMessageEntity extends BaseEntity {
     @Column(nullable = false, updatable = false, length = 256)
     private Long id;
 
-    private Long chatRoomId;
-
     @Enumerated(EnumType.STRING)
     private ChatRoleEnum role;
 
@@ -53,7 +51,7 @@ public class ChatMessageEntity extends BaseEntity {
 
 
     @ManyToOne(targetEntity = ChatRoomEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatRoomId", insertable = false, updatable = false)
+    @JoinColumn(name = "chatRoomId")
     private ChatRoomEntity chatRoom;
 
     public void updateBookMark() {

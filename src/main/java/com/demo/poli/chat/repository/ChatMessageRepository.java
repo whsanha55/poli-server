@@ -11,11 +11,21 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessageEntity, 
             select cum
             from ChatMessage cum
             join cum.chatRoom cr
-            where cum.chatRoomId = :chatRoomId
+            where cum.chatRoom.id = :chatRoomId
             and cr.deleted = false
             order by cum.createdAt desc
         """)
     List<ChatMessageEntity> findByChatRoomId(Long chatRoomId);
+
+    @Query("""
+            select cum
+            from ChatMessage cum
+            join cum.chatRoom cr
+            where cum.chatRoom.id = :chatRoomId
+            and cr.deleted = false
+            order by cum.createdAt
+        """)
+    List<ChatMessageEntity> findByChatRoomIdOrderByCreatedAt(Long chatRoomId);
 
     @Query("""
             select cum
