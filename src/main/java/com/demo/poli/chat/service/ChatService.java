@@ -86,11 +86,12 @@ public class ChatService {
     }
 
     @Transactional
-    public void updateRoomName(Long roomId, String roomName) {
-        var room = getRoom(roomId);
-        room.updateName(roomName);
-        chatRoomRepository.save(room);
+    public void updateRoomSessionId(ChatRoomEntity chatRoom, String sessionId, String chatSummary) {
+        chatRoom.setSessionId(sessionId);
+        if (StringUtils.isNotEmpty(chatSummary)) {
+            chatRoom.updateName(chatSummary);
+        }
+        chatRoomRepository.save(chatRoom);
+
     }
-
-
 }

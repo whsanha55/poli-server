@@ -1,7 +1,8 @@
 package com.demo.poli.chat.facade;
 
 import com.demo.poli.api.chatbot.service.ChatBotService;
-import com.demo.poli.api.chatbot.vo.ChatBotRequest;
+import com.demo.poli.api.chatbot.vo.ChatBotProgressResponse;
+import com.demo.poli.api.chatbot.vo.ChatBotResponse;
 import com.demo.poli.api.gpt.service.GptService;
 import com.demo.poli.api.gpt.vo.GptRequest;
 import com.demo.poli.api.gpt.vo.GptRequest.GptMessage;
@@ -46,27 +47,42 @@ public class ChatFacade {
     @Transactional
     public Flux<ChatStreamResponse> chatStream(ChatRequest request, String userId) {
         var chatMessage = newChat(request, userId);
-        var chatMessages = chatService.getChatMessagesOrderbyOld(chatMessage.getChatRoom().getId());
+        var chatRoom = chatMessage.getChatRoom();
 
-        var sb = new StringBuilder();
-        return chatBotService.getChatCompletion(chatMessages)
+        return chatBotService.getChatCompletion(chatMessage)
+            .publishOn(Schedulers.boundedElastic())
             .doOnNext(response -> {
-                    // ai 대화 결과 저장
-                    var message = response.getLastMessage();
-                    if (StringUtils.isNotEmpty(message)) {
-                        sb.append(message);
+                    var message = response.getMessageOutput();
+                    if (StringUtils.isNotEmpty(message)) {  // 마지막 메시지
 
+                        // ai 대화 결과 저장
+                        chatService.createChatMessage(chatRoom, message, ChatRoleEnum.AI);
+
+                        // 첫 대화
+                        if (chatRoom.getSessionId() == null) {
+                            var sessionId = response.getSessionId();
+
+                            var chatSummary = chatBotService.getChatSummary(sessionId);
+                            chatService.updateRoomSessionId(chatRoom, sessionId, chatSummary);
+
+                        }
                     }
                 }
             )
-            .publishOn(Schedulers.boundedElastic())
-            .doAfterTerminate(() -> chatService.createChatMessage(chatMessage.getChatRoom(), sb.toString(), ChatRoleEnum.AI))
+            .doAfterTerminate(() -> {
+                // todo
+            })
             .onErrorResume(BaseException.class, e -> {
                 log.error("", e);
-                return Flux.just(new ChatBotRequest());
+                return Flux.just(new ChatBotResponse());
             })
-            .map(response -> new ChatStreamResponse(chatMessage, response.getLastMessage())
+            .map(response -> new ChatStreamResponse(chatMessage, response.getData())
             );
+    }
+
+    public ChatBotProgressResponse getChatProgress(Long chatRoomId) {
+        var chatRoom = chatService.getRoom(chatRoomId);
+        return chatBotService.getChatProgress(chatRoom.getSessionId());
     }
 
     public Flux<ChatStreamResponse> chatStream2(ChatRequest request, String userId) {

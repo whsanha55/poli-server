@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -34,6 +35,10 @@ public class ChatRoomEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String userId;
+
+    @Setter
+    @Column(length = 256)
+    private String sessionId;
 
     @Column(length = 100)
     private String roomName;
