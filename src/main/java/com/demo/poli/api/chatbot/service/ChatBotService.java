@@ -27,7 +27,7 @@ public class ChatBotService {
         var chatBotRequest = new ChatBotRequest(entity);
         log.info("chatBotRequest : {}", chatBotRequest);
         return chatbotConfig.webClient().post()
-            .uri("/v1/chat/send")
+            .uri("/v1/chat/stream")
             .bodyValue(chatBotRequest)
             .retrieve()
             .onStatus(HttpStatusCode::isError, errorMessage())
@@ -36,8 +36,9 @@ public class ChatBotService {
     }
 
     public String getChatSummary(String sessionId) {
-        return chatbotConfig.webClient().get()
-            .uri("/v1/summary/{sessionId}", sessionId)
+        return chatbotConfig.webClient().post()
+            .uri("/v1/summary")
+            .bodyValue(Map.of("session_id", sessionId))
             .retrieve()
             .onStatus(HttpStatusCode::isError, errorMessage())
             .bodyToMono(Map.class)
@@ -49,8 +50,9 @@ public class ChatBotService {
     }
 
     public ChatBotProgressResponse getChatProgress(String sessionId) {
-        return chatbotConfig.webClient().get()
-            .uri("/v1/petition/{sessionId}", sessionId)
+        return chatbotConfig.webClient().post()
+            .uri("/v1/petition/readiness")
+            .bodyValue(Map.of("session_id", sessionId))
             .retrieve()
             .onStatus(HttpStatusCode::isError, errorMessage())
             .bodyToMono(ChatBotProgressResponse.class)

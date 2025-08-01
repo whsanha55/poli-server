@@ -52,20 +52,17 @@ public class ChatFacade {
         return chatBotService.getChatCompletion(chatMessage)
             .publishOn(Schedulers.boundedElastic())
             .doOnNext(response -> {
-                    var message = response.getMessageOutput();
+                    var message = response.getFinalContent();
                     if (StringUtils.isNotEmpty(message)) {  // 마지막 메시지
 
                         // ai 대화 결과 저장
                         chatService.createChatMessage(chatRoom, message, ChatRoleEnum.AI);
 
-                        // 첫 대화
-                        if (chatRoom.getSessionId() == null) {
-                            var sessionId = response.getSessionId();
+                        // 채팅방 제목 업데이트
+                        var sessionId = response.getSessionId();
+                        var chatSummary = chatBotService.getChatSummary(sessionId);
+                        chatService.updateRoomSessionId(chatRoom, sessionId, chatSummary);
 
-                            var chatSummary = chatBotService.getChatSummary(sessionId);
-                            chatService.updateRoomSessionId(chatRoom, sessionId, chatSummary);
-
-                        }
                     }
                 }
             )
