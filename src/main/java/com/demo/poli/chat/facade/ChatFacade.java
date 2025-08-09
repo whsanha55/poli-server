@@ -54,6 +54,8 @@ public class ChatFacade {
             .doOnNext(response -> {
                     var message = response.getFinalContent();
                     if (StringUtils.isNotEmpty(message)) {  // 마지막 메시지
+                        log.info("chatStream request : {}", request);
+                        log.info("chatStream response : {}", message);
 
                         // ai 대화 결과 저장
                         chatService.createChatMessage(chatRoom, message, ChatRoleEnum.AI);

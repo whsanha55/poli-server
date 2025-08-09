@@ -21,19 +21,17 @@ public class ChatBotRequest {
     private String message;
     @JsonProperty("session_id")
     private String sessionId;
-
-    @Builder
-    @Data
-    public static class GptMessage {
-
-        private String role;
-        private String content;
-    }
+    @JsonProperty("user_id")
+    private String userId;
+    @JsonProperty("user_name")
+    private String userName;
 
 
     public ChatBotRequest(ChatMessageEntity entity) {
         var chatRoom = entity.getChatRoom();
         this.sessionId = chatRoom.getSessionId();
+        this.userId = chatRoom.getUserId();
+        this.userName = chatRoom.getUserId();
         this.message = entity.getMessage();
         // 초기 대화가 없는 경우, 초기 메시지 추가
         if (sessionId == null) {

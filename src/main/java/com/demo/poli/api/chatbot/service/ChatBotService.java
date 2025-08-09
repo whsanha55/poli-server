@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -31,8 +32,7 @@ public class ChatBotService {
             .bodyValue(chatBotRequest)
             .retrieve()
             .onStatus(HttpStatusCode::isError, errorMessage())
-            .bodyToFlux(ChatBotResponse.class)
-            .doOnNext(response -> log.info("chat bot response : {}", response));
+            .bodyToFlux(ChatBotResponse.class);
     }
 
     public String getChatSummary(String sessionId) {
@@ -43,16 +43,20 @@ public class ChatBotService {
             .onStatus(HttpStatusCode::isError, errorMessage())
             .bodyToMono(Map.class)
             .doOnNext(response -> log.info("chat bot summary response : {}", response))
-            .block()
-            .getOrDefault("summary", "")
-            .toString();
+            .blockOptional()
+            .map(map -> map.get("summary"))
+            .map(Object::toString)
+            .orElse("");
 
     }
 
     public ChatBotProgressResponse getChatProgress(String sessionId) {
+        if (StringUtils.isBlank(sessionId)) {
+            return new ChatBotProgressResponse();
+        }
         return chatbotConfig.webClient().post()
             .uri("/v1/petition/readiness")
-            .bodyValue(Map.of("session_id", sessionId))
+            .bodyValue(Map.of("session_id", StringUtils.defaultString(sessionId)))
             .retrieve()
             .onStatus(HttpStatusCode::isError, errorMessage())
             .bodyToMono(ChatBotProgressResponse.class)
