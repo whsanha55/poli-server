@@ -3,6 +3,7 @@ package com.demo.poli.chat.enums;
 public enum ChatRoleEnum {
 
     USER,
+    USER_IMAGE,
     AI,
 
     SUMMARY,

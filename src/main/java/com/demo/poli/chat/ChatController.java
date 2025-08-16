@@ -10,6 +10,8 @@ import com.demo.poli.chat.vo.ChatRoomResponse;
 import com.demo.poli.chat.vo.ChatStreamResponse;
 import com.demo.poli.global.base.BaseResponse;
 import com.demo.poli.user.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -23,7 +25,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 @Tag(name = "ChatController", description = "채팅방을 관리합니다.")
@@ -35,12 +39,20 @@ public class ChatController {
     private final UserService userService;
     private final ChatFacade chatFacade;
     private final ChatService chatService;
+    private final ObjectMapper objectMapper;
 
     @Operation(summary = "ai 실시간 대화", description = "사용자 대화를 통해 AI 대화를 생성하여 sse 반환")
-    @PostMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ChatStreamResponse> chatStream(@RequestHeader("user-id") String userId, @RequestBody ChatRequest request) {
+    @PostMapping(value = "/chat/stream",
+        produces = MediaType.TEXT_EVENT_STREAM_VALUE,
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Flux<ChatStreamResponse> chatStream(
+        @RequestHeader("user-id") String userId,
+        @RequestPart("request") String request,
+        @RequestPart(value = "files", required = false) List<MultipartFile> files) throws JsonProcessingException {
+        var chatRequest = objectMapper.readValue(request, ChatRequest.class);
         userService.getUser(userId);
-        return chatFacade.chatStream(request, userId);
+
+        return chatFacade.chatStream(userId, chatRequest, files);
     }
 
     @Operation(summary = "채팅방 목록 조회", description = "최신순으로 나열")

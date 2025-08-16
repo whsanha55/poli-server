@@ -1,12 +1,15 @@
 package com.demo.poli.chat.service;
 
+import com.demo.poli.api.s3.vo.S3ObjectInfo;
 import com.demo.poli.chat.entity.ChatMessageEntity;
+import com.demo.poli.chat.entity.ChatMessageEntity.ChatMessageEntityBuilder;
 import com.demo.poli.chat.entity.ChatRoomEntity;
 import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.chat.repository.ChatMessageRepository;
 import com.demo.poli.chat.repository.ChatRoomRepository;
 import com.demo.poli.global.exception.BaseException;
 import jakarta.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +35,18 @@ public class ChatService {
     }
 
     @Transactional
-    public ChatMessageEntity createChatMessage(ChatRoomEntity chatRoom, String message, ChatRoleEnum role) {
-        return chatMessageRepository.save(ChatMessageEntity.builder()
+    public ChatMessageEntity createChatMessage(ChatRoomEntity chatRoom, ChatRoleEnum role, String message, S3ObjectInfo... s3ObjectInfos) {
+        var chatMessage = ChatMessageEntity.builder()
             .chatRoom(chatRoom)
             .role(role)
             .message(message)
-            .build());
+            .build();
+
+        if (s3ObjectInfos.length > 0) {
+            chatMessage.setS3ObjectInfos(Arrays.asList(s3ObjectInfos));
+        }
+
+        return chatMessageRepository.save(chatMessage);
     }
 
     public ChatRoomEntity getRoom(Long chatRoomId) {

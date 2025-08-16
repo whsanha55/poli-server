@@ -3,23 +3,22 @@ package com.demo.poli.chat.facade;
 import com.demo.poli.api.chatbot.service.ChatBotService;
 import com.demo.poli.api.chatbot.vo.ChatBotProgressResponse;
 import com.demo.poli.api.chatbot.vo.ChatBotResponse;
-import com.demo.poli.api.gpt.service.GptService;
-import com.demo.poli.api.gpt.vo.GptRequest;
-import com.demo.poli.api.gpt.vo.GptRequest.GptMessage;
-import com.demo.poli.api.gpt.vo.GptResponse;
+import com.demo.poli.api.s3.service.S3Service;
+import com.demo.poli.api.s3.vo.S3ObjectInfo;
 import com.demo.poli.chat.entity.ChatMessageEntity;
 import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.chat.service.ChatService;
 import com.demo.poli.chat.vo.ChatRequest;
 import com.demo.poli.chat.vo.ChatStreamResponse;
 import com.demo.poli.global.exception.BaseException;
-import com.demo.poli.user.service.UserService;
 import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
@@ -30,29 +29,29 @@ public class ChatFacade {
 
 
     private final ChatService chatService;
-    private final GptService gptService;
-    private final UserService userService;
     private final ChatBotService chatBotService;
+    private final S3Service s3Service;
 
-    @Transactional
-    public ChatMessageEntity newChat(ChatRequest request, String userId) {
+    private ChatMessageEntity newChat(String userId, ChatRequest request, List<MultipartFile> files) {
 
         var chatRoom = Optional.ofNullable(request.getRoomId())
             .map(chatService::getRoom)
             .orElseGet(() -> chatService.createRoom(userId, request.getInitMessage(), request.getMessage()));
 
+        // 파일 업로드
+        var s3ObjectInfos = s3Service.uploadFiles(files, userId + "/" + chatRoom.getId());
         // 요청 사용자 대화 추가
-        return chatService.createChatMessage(chatRoom, request.getMessage(), ChatRoleEnum.USER);
+        return chatService.createChatMessage(chatRoom, ChatRoleEnum.USER, request.getMessage(), s3ObjectInfos.toArray(new S3ObjectInfo[0]));
 
     }
 
     @Transactional
-    public Flux<ChatStreamResponse> chatStream(ChatRequest request, String userId) {
-        var chatMessage = newChat(request, userId);
-        var user = userService.getUser(userId);
+    public Flux<ChatStreamResponse> chatStream(String userId, ChatRequest request, List<MultipartFile> files) {
+        var chatMessage = newChat(userId, request, files);
+
         var chatRoom = chatMessage.getChatRoom();
 
-        return chatBotService.getChatCompletion(chatMessage, user)
+        return chatBotService.getChatCompletion(chatMessage)
             .publishOn(Schedulers.boundedElastic())
             .doOnNext(response -> {
                     var message = response.getFinalContent();
@@ -61,7 +60,7 @@ public class ChatFacade {
                         log.info("chatStream response : {}", message);
 
                         // ai 대화 결과 저장
-                        chatService.createChatMessage(chatRoom, message, ChatRoleEnum.AI);
+                        chatService.createChatMessage(chatRoom, ChatRoleEnum.AI, message);
 
                         // 채팅방 제목 업데이트
                         var sessionId = response.getSessionId();
@@ -85,34 +84,6 @@ public class ChatFacade {
     public ChatBotProgressResponse getChatProgress(Long chatRoomId) {
         var chatRoom = chatService.getRoom(chatRoomId);
         return chatBotService.getChatProgress(chatRoom.getSessionId());
-    }
-
-    public Flux<ChatStreamResponse> chatStream2(ChatRequest request, String userId) {
-        var chatMessage = newChat(request, userId);
-        var sb = new StringBuilder();
-        return gptService.getChatCompletion(
-                GptRequest.builder()
-                    .message(GptMessage.builder()
-                        .role("user")
-                        .content(chatMessage.getMessage())
-                        .build())
-                    .build())
-            .publishOn(Schedulers.boundedElastic())
-            .doOnNext(response -> { // ai 대화 결과 저장
-                    log.info("response : {}", response);
-                    if (StringUtils.isNotEmpty(response.getResult())) {
-                        sb.append(response.getResult());
-
-                    }
-                }
-            )
-            .doAfterTerminate(() -> chatService.createChatMessage(chatMessage.getChatRoom(), sb.toString(), ChatRoleEnum.AI))
-            .onErrorResume(BaseException.class, e -> {
-                log.error("", e);
-                return Flux.just(new GptResponse());
-            })
-            .map(response -> new ChatStreamResponse(chatMessage, response.getResult())
-            );
     }
 
 }

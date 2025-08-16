@@ -23,6 +23,10 @@ public class ChatMessageResponse extends BaseResponse {
             .toList();
     }
 
+    public ChatMessageResponse(ChatMessageEntity chatMessageEntity) {
+        this.rooms = List.of(new ChatUserMessage(chatMessageEntity));
+    }
+
     @Value
     @JsonInclude(Include.NON_EMPTY)
     public static class ChatUserMessage {

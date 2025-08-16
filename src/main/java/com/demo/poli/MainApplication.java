@@ -18,6 +18,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 public class MainApplication {
 
+    static {
+        // AWS SDK v1 경고 메시지 비활성화
+        System.setProperty("aws.java.v1.disableDeprecationAnnouncement", "true");
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(MainApplication.class, args);
 
