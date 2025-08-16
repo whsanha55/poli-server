@@ -13,6 +13,7 @@ import com.demo.poli.chat.service.ChatService;
 import com.demo.poli.chat.vo.ChatRequest;
 import com.demo.poli.chat.vo.ChatStreamResponse;
 import com.demo.poli.global.exception.BaseException;
+import com.demo.poli.user.service.UserService;
 import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
@@ -30,6 +31,7 @@ public class ChatFacade {
 
     private final ChatService chatService;
     private final GptService gptService;
+    private final UserService userService;
     private final ChatBotService chatBotService;
 
     @Transactional
@@ -47,9 +49,10 @@ public class ChatFacade {
     @Transactional
     public Flux<ChatStreamResponse> chatStream(ChatRequest request, String userId) {
         var chatMessage = newChat(request, userId);
+        var user = userService.getUser(userId);
         var chatRoom = chatMessage.getChatRoom();
 
-        return chatBotService.getChatCompletion(chatMessage)
+        return chatBotService.getChatCompletion(chatMessage, user)
             .publishOn(Schedulers.boundedElastic())
             .doOnNext(response -> {
                     var message = response.getFinalContent();

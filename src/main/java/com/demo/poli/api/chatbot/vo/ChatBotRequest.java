@@ -1,6 +1,7 @@
 package com.demo.poli.api.chatbot.vo;
 
 import com.demo.poli.chat.entity.ChatMessageEntity;
+import com.demo.poli.user.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,12 +28,12 @@ public class ChatBotRequest {
     private String userName;
 
 
-    public ChatBotRequest(ChatMessageEntity entity) {
-        var chatRoom = entity.getChatRoom();
+    public ChatBotRequest(ChatMessageEntity chatMessage, UserEntity user) {
+        var chatRoom = chatMessage.getChatRoom();
         this.sessionId = chatRoom.getSessionId();
-        this.userId = chatRoom.getUserId();
-        this.userName = chatRoom.getUserId();
-        this.message = entity.getMessage();
+        this.userId = user.getUserId();
+        this.userName = user.getUserName();
+        this.message = chatMessage.getMessage();
         // 초기 대화가 없는 경우, 초기 메시지 추가
         if (sessionId == null) {
             this.message = chatRoom.getInitMessage() + this.message;

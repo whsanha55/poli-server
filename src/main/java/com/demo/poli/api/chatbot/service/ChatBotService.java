@@ -5,6 +5,7 @@ import com.demo.poli.api.chatbot.vo.ChatBotProgressResponse;
 import com.demo.poli.api.chatbot.vo.ChatBotRequest;
 import com.demo.poli.api.chatbot.vo.ChatBotResponse;
 import com.demo.poli.chat.entity.ChatMessageEntity;
+import com.demo.poli.user.entity.UserEntity;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +24,9 @@ public class ChatBotService {
 
     private final ChatbotConfig chatbotConfig;
 
-    public Flux<ChatBotResponse> getChatCompletion(ChatMessageEntity entity) {
+    public Flux<ChatBotResponse> getChatCompletion(ChatMessageEntity entity, UserEntity user) {
 
-        var chatBotRequest = new ChatBotRequest(entity);
+        var chatBotRequest = new ChatBotRequest(entity, user);
         log.info("chatBotRequest : {}", chatBotRequest);
         return chatbotConfig.webClient().post()
             .uri("/v1/chat/stream")
