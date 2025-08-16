@@ -39,14 +39,6 @@ logging:
   file:
     path: ./logs
 
-#api:
-#  gpt:
-#    api-key: depends-on-profile
-#    model: gpt-4o-mini
-#    url: https://api.openai.com/v1/chat/completions
-#  chat-bot:
-#    url: https://chatbot.poli.ai.kr
-
 poli:
   chat-bot:
     url: https://chatbot.poli.ai.kr

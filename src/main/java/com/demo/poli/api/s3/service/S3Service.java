@@ -42,8 +42,7 @@ public class S3Service {
         var key = generateKey(folder, file.getOriginalFilename());
 
         try {
-            var contentType = determineContentType(file);
-
+            var contentType = "application/octet-stream";
             log.info("Naver Object Storage 파일 업로드 시작 - Key: {}, Size: {} bytes", key, file.getSize());
 
             // 메타데이터 설정
@@ -57,9 +56,11 @@ public class S3Service {
             var putObjectRequest = new PutObjectRequest(
                 s3PoliConfig.getBucket(),
                 key,
-                file.getInputStream(),
-                metadata
+                file.getInputStream()
+                ,
+                null
             );
+            putObjectRequest.getRequestClientOptions().setReadLimit(1024 * 1024 * 400); // 40MB 읽기 제한
 
             // Naver Object Storage에 파일 업로드
             s3Client.putObject(putObjectRequest);
@@ -214,27 +215,6 @@ public class S3Service {
             return "unknown";
         }
         return filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
-    }
-
-    private String determineContentType(MultipartFile file) {
-        String contentType = file.getContentType();
-        if (contentType != null && !contentType.isEmpty()) {
-            return contentType;
-        }
-
-        String extension = getFileExtension(file.getOriginalFilename());
-        return switch (extension) {
-            case "jpg", "jpeg" -> "image/jpeg";
-            case "png" -> "image/png";
-            case "gif" -> "image/gif";
-            case "webp" -> "image/webp";
-            case "pdf" -> "application/pdf";
-            case "txt" -> "text/plain";
-            case "json" -> "application/json";
-            case "mp4" -> "video/mp4";
-            case "mp3" -> "audio/mpeg";
-            default -> "application/octet-stream";
-        };
     }
 
 }

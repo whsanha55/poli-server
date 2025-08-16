@@ -6,8 +6,11 @@ import com.demo.poli.api.chatbot.vo.ChatBotResponse;
 import com.demo.poli.api.s3.service.S3Service;
 import com.demo.poli.api.s3.vo.S3ObjectInfo;
 import com.demo.poli.chat.entity.ChatMessageEntity;
+import com.demo.poli.chat.entity.ChatPetitionEntity;
 import com.demo.poli.chat.enums.ChatRoleEnum;
+import com.demo.poli.chat.service.ChatPetitionService;
 import com.demo.poli.chat.service.ChatService;
+import com.demo.poli.chat.vo.ChatPetitionRequest;
 import com.demo.poli.chat.vo.ChatRequest;
 import com.demo.poli.chat.vo.ChatStreamResponse;
 import com.demo.poli.global.exception.BaseException;
@@ -30,6 +33,7 @@ public class ChatFacade {
 
     private final ChatService chatService;
     private final ChatBotService chatBotService;
+    private final ChatPetitionService chatPetitionService;
     private final S3Service s3Service;
 
     private ChatMessageEntity newChat(String userId, ChatRequest request, List<MultipartFile> files) {
@@ -86,4 +90,17 @@ public class ChatFacade {
         return chatBotService.getChatProgress(chatRoom.getSessionId());
     }
 
+    public ChatPetitionEntity getChatPetition(Long chatRoomId) {
+        var chatRoom = chatService.getRoom(chatRoomId);
+        return chatPetitionService.getChatPetition(chatRoom);
+    }
+
+    @Transactional
+    public ChatPetitionEntity updateChatPetition(Long chatRoomId, ChatPetitionRequest request) {
+        var newPetitionJson = StringUtils.isNotEmpty(request.getPetitionRaw()) ?
+            chatBotService.extractPetitionToJson(request.getPetitionRaw()) :
+            request.getPetitionJson();
+        var chatRoom = chatService.getRoom(chatRoomId);
+        return chatPetitionService.updatePetition(chatRoom, newPetitionJson);
+    }
 }

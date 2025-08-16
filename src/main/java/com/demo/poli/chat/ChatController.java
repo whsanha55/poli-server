@@ -1,6 +1,5 @@
 package com.demo.poli.chat;
 
-import com.demo.poli.api.chatbot.vo.ChatBotProgressResponse;
 import com.demo.poli.chat.facade.ChatFacade;
 import com.demo.poli.chat.service.ChatService;
 import com.demo.poli.chat.vo.ChatBookMarkResponse;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -75,13 +73,6 @@ public class ChatController {
         userService.getUser(userId);
         var chatMessages = chatService.findBookMarkedChatAiMessages(userId);
         return new ChatBookMarkResponse(chatMessages);
-    }
-
-    @Operation(summary = "채팅 진척도 조회")
-    @GetMapping("/chat/progress/{roomId}")
-    public ChatBotProgressResponse getChatProgress(@RequestHeader("user-id") String userId, @PathVariable Long roomId) {
-        userService.getUser(userId);
-        return chatFacade.getChatProgress(roomId);
     }
 
     @Operation(summary = "채팅 내역 북마크", description = "스위치 형식으로 북마크 설정/해제")

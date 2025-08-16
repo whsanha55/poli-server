@@ -30,13 +30,9 @@ public class S3Config {
             .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(
                 poliConfig.getS3().getAccessKey(),
                 poliConfig.getS3().getSecretKey())))
-            .withPathStyleAccessEnabled(true)
-//            .withClientConfiguration(clientConfig)
             .build();
 
     }
-
-
 
     @Bean
     public PoliConfig.S3 s3PoliConfig() {

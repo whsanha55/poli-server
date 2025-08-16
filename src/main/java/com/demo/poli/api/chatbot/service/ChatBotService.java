@@ -4,7 +4,6 @@ import com.demo.poli.api.chatbot.config.ChatbotConfig;
 import com.demo.poli.api.chatbot.vo.ChatBotProgressResponse;
 import com.demo.poli.api.chatbot.vo.ChatBotRequest;
 import com.demo.poli.api.chatbot.vo.ChatBotResponse;
-import com.demo.poli.chat.entity.ChatImageEntity;
 import com.demo.poli.chat.entity.ChatMessageEntity;
 import java.util.Map;
 import java.util.function.Function;
@@ -63,6 +62,18 @@ public class ChatBotService {
             .onStatus(HttpStatusCode::isError, errorMessage())
             .bodyToMono(ChatBotProgressResponse.class)
             .doOnNext(response -> log.info("chat bot progress response : {}", response))
+            .block();
+
+    }
+
+    public String extractPetitionToJson(String text) {
+        return chatbotConfig.webClient().post()
+            .uri("/v1/text-analysis/extract")
+            .bodyValue(Map.of("text", text))
+            .retrieve()
+            .onStatus(HttpStatusCode::isError, errorMessage())
+            .bodyToMono(String.class)
+            .doOnNext(response -> log.info("chat bot extractTextToJson : {}", response))
             .block();
 
     }
