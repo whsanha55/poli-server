@@ -4,6 +4,7 @@ import com.demo.poli.api.s3.service.S3Service;
 import com.demo.poli.api.s3.vo.S3ObjectInfo;
 import com.demo.poli.chat.enums.ChatRoleEnum;
 import com.demo.poli.global.base.BaseEntity;
+import com.demo.poli.user.entity.UserEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -62,6 +64,8 @@ public class ChatMessageEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "chatMessage", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ChatImageEntity> chatImages;
+    @Setter
+    private transient UserEntity user;
 
     public void updateBookMark() {
         this.bookmarked = !this.bookmarked;

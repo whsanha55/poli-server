@@ -14,6 +14,7 @@ import com.demo.poli.chat.vo.ChatPetitionRequest;
 import com.demo.poli.chat.vo.ChatRequest;
 import com.demo.poli.chat.vo.ChatStreamResponse;
 import com.demo.poli.global.exception.BaseException;
+import com.demo.poli.user.service.UserService;
 import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -35,6 +36,7 @@ public class ChatFacade {
     private final ChatBotService chatBotService;
     private final ChatPetitionService chatPetitionService;
     private final S3Service s3Service;
+    private final UserService userService;
 
     private ChatMessageEntity newChat(String userId, ChatRequest request, List<MultipartFile> files) {
 
@@ -45,7 +47,10 @@ public class ChatFacade {
         // 파일 업로드
         var s3ObjectInfos = s3Service.uploadFiles(files, userId + "/" + chatRoom.getId());
         // 요청 사용자 대화 추가
-        return chatService.createChatMessage(chatRoom, ChatRoleEnum.USER, request.getMessage(), s3ObjectInfos.toArray(new S3ObjectInfo[0]));
+        var chatMessage = chatService.createChatMessage(chatRoom, ChatRoleEnum.USER, request.getMessage(),
+            s3ObjectInfos.toArray(new S3ObjectInfo[0]));
+        chatMessage.setUser(userService.getUser(userId));
+        return chatMessage;
 
     }
 

@@ -33,18 +33,20 @@ public class ChatBotRequest {
     public ChatBotRequest(ChatMessageEntity entity) {
         var chatRoom = entity.getChatRoom();
         this.sessionId = chatRoom.getSessionId();
-        this.userId = chatRoom.getUserId();
-        this.userName = chatRoom.getUserId();
+        this.userId = entity.getUser().getUserName();
+        this.userName = entity.getUser().getUserName();
         this.message = entity.getMessage();
         // 초기 대화가 없는 경우, 초기 메시지 추가
         if (sessionId == null) {
             this.message = chatRoom.getInitMessage() + this.message;
         }
 
-        this.imageUrl =  entity.getChatImages()
-            .stream()
-            .map(ChatImageEntity::getFileUrl)
-            .toList();
+        if (entity.getChatImages() != null) {
+            this.imageUrl = entity.getChatImages()
+                .stream()
+                .map(ChatImageEntity::getFileUrl)
+                .toList();
+        }
 
 
     }
